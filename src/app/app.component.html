@@ -1,0 +1,99 @@
+<div class="container flex">
+
+  <h1>Simulação de Data-Mining</h1>
+
+  <div class="btn1-div flex">
+    <span>Para começar a simulação de DataMining, clique no botão a seguir...</span>
+    <button (click)="gerar()">Gerar Banco de dados</button>
+  </div>
+  <hr>
+  <div *ngIf="mostrarVendasdeFE" class="btn2-div flex">
+    <span>Use a tecla "F12" e vá para o console para mais informações</span>
+
+    <div *ngIf="itemsMaisVendidos" class="flex">
+      <h2>Produtos mais Vendidos</h2>
+      <ul>
+        <li *ngFor="let item of itemsMaisVendidos">
+          {{item[1]}} - {{item[0]}}
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="categoriasMaisVendidas" class="flex">
+      <h2>Categoria que mais Vende</h2>
+      <ul>
+        <li *ngFor="let item of categoriasMaisVendidas">
+          {{item[1]}} - {{item[0]}}
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="mostrarVendasdeFE" class="flex">
+      <div class="flex" style="flex-direction:row; flex-wrap: wrap; justify-content: center;">
+        <h2>Produtos mais Vendidos para</h2>
+        <select #selectFaixa style="margin-left: 10px;" (change)="selecionaFaixa()" name="porAgoraNada">
+          <option value='jovemAdulto'>Jovem adulto</option>
+          <option value='adulto'>Adulto</option>
+          <option value='meiaIdade'>Meia idade</option>
+          <option value='terceiraIdade'>Terceira idade</option>
+        </select>
+      </div>
+      <ul>
+        <li *ngFor="let item of idadeSelecionada">
+          {{item[0]}} - {{item[1]}}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div *ngIf="mostrarVendasdeFE" class="flex">
+    <div class="flex" style="flex-direction:row; flex-wrap: wrap; justify-content: center;">
+      <h2>Categorias mais Vendidas para</h2>
+      <select #selectFaixa1 style="margin-left: 10px;" (change)="selecionaFaixa1()" name="porAgoraNada">
+        <option value='jovemAdulto'>Jovem adulto</option>
+        <option value='adulto'>Adulto</option>
+        <option value='meiaIdade'>Meia idade</option>
+        <option value='terceiraIdade'>Terceira idade</option>
+      </select>
+    </div>
+    <ul>
+      <li *ngFor="let item of idadeSelecionada1">
+        {{item[0]}} - {{item[1]}}
+      </li>
+    </ul>
+  </div>
+  <hr *ngIf="mostrarVendasdeFE">
+  <div *ngIf="mostrarVendasdeFE" class="flex">
+    <h2>Caracteristicas e recomendações para Usuário</h2>
+    <span>Escolha um número de 0 á 9999, use f12 e em console veja a lista gerada</span>
+    <div class="flex" style="flex-direction:row;">
+      <input #porIndice style="height:44.545px;font-size: 1.2em;width:80px;" type="number" min="0" max="10000"
+        value="0">
+      <button (click)="getContaPorIndice()">Mostrar Usuário</button>
+    </div>
+
+    <div *ngIf="contaSelecionada" class="dadosDeConta">
+      <h2>{{contaSelecionada.nome}} {{contaSelecionada.sobreNome}}</h2>
+      <span>Idade: {{contaSelecionada.idade}}</span><br>
+      <span>Faixa etária: {{faixaEtariaDaConta}}</span>
+      <h3>{{contaSelecionada.compras.length}} Compras Realizadas</h3>
+      <ul>
+        <li *ngFor="let item of contaSelecionada.compras">
+          {{item.produto}}
+        </li>
+      </ul>
+      <h3>{{contaSelecionada.pesquisas.length}} Pesquisas Realizadas</h3>
+      <ul>
+        <li *ngFor="let item of contaSelecionada.pesquisas">
+          {{item.produto}}
+        </li>
+      </ul>
+    </div>
+
+
+
+  </div>
+
+
+
+</div>
