@@ -222,7 +222,29 @@ export class AppComponent implements OnInit {
     if (ind <= 9999) {
       this.contaSelecionada = this.contas[ind]
       this.faixaEtariaDaConta = this.confereFaixa(this.contaSelecionada.idade, true)
+      this.recomendaParaUser();
     }
+  }
+
+
+  recomendaParaUser(){
+    let categoriasRecomendadas:any = [];
+    let produtosRecomendados:any = []
+    this.contaSelecionada.pesquisas.forEach((pesq:any)=>{
+      let have = false;
+      for(let comp of this.contaSelecionada.compras){
+        if(pesq.produto === comp.produto){
+          have = true;
+          break;
+        }
+      }
+      if(!have){
+        produtosRecomendados.push(pesq.produto);
+        categoriasRecomendadas.push(pesq.categoria);
+      }
+    })
+    console.log(produtosRecomendados)
+    console.log(categoriasRecomendadas)
   }
 
 }

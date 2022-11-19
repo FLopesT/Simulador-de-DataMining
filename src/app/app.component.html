@@ -76,18 +76,25 @@
       <h2>{{contaSelecionada.nome}} {{contaSelecionada.sobreNome}}</h2>
       <span>Idade: {{contaSelecionada.idade}}</span><br>
       <span>Faixa etária: {{faixaEtariaDaConta}}</span>
-      <h3>{{contaSelecionada.compras.length}} Compras Realizadas</h3>
+
+      <div class="flex" style="flex-direction:row;align-items: flex-start;">
+
       <ul>
+        <h3>{{contaSelecionada.compras.length}} Compras Realizadas</h3>
         <li *ngFor="let item of contaSelecionada.compras">
           {{item.produto}}
         </li>
       </ul>
-      <h3>{{contaSelecionada.pesquisas.length}} Pesquisas Realizadas</h3>
       <ul>
+        <h3>{{contaSelecionada.pesquisas.length}} Pesquisas Realizadas</h3>
         <li *ngFor="let item of contaSelecionada.pesquisas">
           {{item.produto}}
         </li>
       </ul>
+
+      </div>
+
+
     </div>
 
 
