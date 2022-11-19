@@ -20,6 +20,7 @@
     "@angular/router": "~13.3.0",
     "faker-br": "^0.3.0",
     "gerador-nome": "^0.0.5",
+    "heroku": "^7.66.4",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "uuidv4": "^6.2.13",
