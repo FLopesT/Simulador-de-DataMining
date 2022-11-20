@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
 
   maisVendidosPorFaixaEtária: NovoObj = {};
   categoriasMaisVendidasPorFaixaEtária: NovoObj = {};
+  produtosRecomendados: any = []
 
   categoriasDeFaixaetaria: NovoObj = {
     jovemAdulto: {},
@@ -57,6 +58,7 @@ export class AppComponent implements OnInit {
 
   gerar() {
     if (this.categoriasMaisVendidas) {
+      this.produtosRecomendados = [];
       this.categoriasMaisVendidas = undefined;
       this.itemsMaisVendidos = undefined;
       this.maisVendidosPorFaixaEtária = {}
@@ -71,6 +73,7 @@ export class AppComponent implements OnInit {
       contas.push(this.gerarBanco.gerar());
       this.gerarBanco.startRandom()
       index++
+      this.gerarBanco.numeroDeContas++;
     }
     this.contas = contas;
     console.log('-')
@@ -119,7 +122,7 @@ export class AppComponent implements OnInit {
 
     Object.entries(this.categoriasDeFaixaetaria).forEach(entrie => {
       let top = []
-      top = this.top5Etop3(2, entrie[1])
+      top = this.top5Etop3(3, entrie[1])
       this.categoriasMaisVendidasPorFaixaEtária[entrie[0]] = top;
     })
     console.log('-')
@@ -137,21 +140,24 @@ export class AppComponent implements OnInit {
 
   }
 
+  faixaObj = ['jovemAdulto', 'adulto', 'meiaIdade', 'terceiraIdade']
+  faixaString = ['Jovem adulto', 'Adulto', 'Meia Idade', 'Terceira idade']
+
   confereFaixa(idade: number, text?: boolean) {
     if (idade <= 25) {
-      if (text) return 'Jovem adulto'
-      return 'jovemAdulto'
+      if (text) return this.faixaString[0]
+      return this.faixaObj[0]
     }
     if (idade <= 40) {
-      if (text) return 'Adulto'
-      return 'adulto'
+      if (text) return this.faixaString[1]
+      return this.faixaObj[1]
     }
     if (idade <= 65) {
-      if (text) return 'Meia Idade'
-      return 'meiaIdade'
+      if (text) return this.faixaString[2]
+      return this.faixaObj[2]
     }
-    else if (text) return 'Terceira idade'
-    return 'terceiraIdade'
+    else if (text) return this.faixaString[3]
+    return this.faixaObj[3]
   }
 
   faixaOtária() {
@@ -192,9 +198,13 @@ export class AppComponent implements OnInit {
         obj = { ...this.categorias }
         max = 3
         break;
-      default:
+      case (2):
         obj = { ...nObj }
         max = 5
+        break;
+      default:
+        obj = { ...nObj }
+        max = 3
     }
     let i = 1
     while (i <= max) {
@@ -220,6 +230,7 @@ export class AppComponent implements OnInit {
   getContaPorIndice() {
     let ind = Number(this.indice.nativeElement.value);
     if (ind <= 9999) {
+      this.produtosRecomendados = [];
       this.contaSelecionada = this.contas[ind]
       this.faixaEtariaDaConta = this.confereFaixa(this.contaSelecionada.idade, true)
       this.recomendaParaUser();
@@ -227,24 +238,90 @@ export class AppComponent implements OnInit {
   }
 
 
-  recomendaParaUser(){
-    let categoriasRecomendadas:any = [];
-    let produtosRecomendados:any = []
-    this.contaSelecionada.pesquisas.forEach((pesq:any)=>{
+  recomendaParaUser() {
+    this.contaSelecionada.pesquisas.forEach((pesq: any) => {
       let have = false;
-      for(let comp of this.contaSelecionada.compras){
-        if(pesq.produto === comp.produto){
+      for (let comp of this.contaSelecionada.compras) {
+        if (pesq.produto === comp.produto) {
           have = true;
           break;
         }
       }
-      if(!have){
-        produtosRecomendados.push(pesq.produto);
-        categoriasRecomendadas.push(pesq.categoria);
+      if (!have) { //não vamos recomendar oque a pessoa já comprou
+        this.produtosRecomendados.push(pesq.produto);
       }
     })
-    console.log(produtosRecomendados)
-    console.log(categoriasRecomendadas)
+    let fe;
+    switch (this.faixaEtariaDaConta) {
+      case (this.faixaString[0]): { fe = this.faixaObj[0]; break; }
+      case (this.faixaString[1]): { fe = this.faixaObj[1]; break; }
+      case (this.faixaString[2]): { fe = this.faixaObj[2]; break; }
+      default: fe = this.faixaObj[3];
+    }
+    //recomendando item mais vendidos por faixa estária correspondente
+    this.maisVendidosPorFaixaEtária[fe].forEach((prod: any) => {
+      this.produtosRecomendados.push(prod[1]);
+    })
+    //recomendando 3 items aleatóreos das categorias mais populares correpondentes a faixa etária
+    this.categoriasMaisVendidasPorFaixaEtária[fe].forEach((prod:any)=>{
+      for(let cat of this.gerarBanco.produtos){
+        if(prod[1] == cat.categoria){
+          this.produtosRecomendados.push(cat.produtos[0])
+          this.produtosRecomendados.push(cat.produtos[1])
+          this.produtosRecomendados.push(cat.produtos[2])
+          break;
+        }
+      }
+    })
+    //recomendando item mais vendidos
+    this.itemsMaisVendidos.forEach((prod:any)=>{
+      this.produtosRecomendados.push(prod[1]);
+    })
+    //recomendando 2 items aleatóreos das categorias mais populares
+    this.categoriasMaisVendidas.forEach((prod:any)=>{
+      for(let cat of this.gerarBanco.produtos){
+        if(prod[1] == cat.categoria){
+          this.produtosRecomendados.push(cat.produtos[0])
+          this.produtosRecomendados.push(cat.produtos[1])
+          break;
+        }
+      }
+    })
+    let result = this.removeDuplicata(this.produtosRecomendados)
+    if (result) {
+      this.produtosRecomendados = result;
+    }
+    console.log('-')
+    console.log(`PRODUTOS RECOMENDADOS PARA ${(this.contaSelecionada.nome).toUpperCase()} ${this.contaSelecionada.sobreNome.toUpperCase()}`,this.produtosRecomendados)
+  }
+
+  removeDuplicata(arrayOriginal: string[]) {
+    let array: string[] = []
+
+    arrayOriginal.forEach((item: string) => {
+
+      let have = false
+      if (array.length == 0) {
+        array.push(item)
+      }
+
+      for (let arr of array) {
+        if (item == arr) {
+          have = true
+          break;
+        }
+      }
+
+      if (!have) {
+        array.push(item);
+      }
+
+    })
+
+    if (array.length != arrayOriginal.length) {
+      return array;
+    }
+    return undefined;
   }
 
 }

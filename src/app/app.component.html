@@ -72,12 +72,12 @@
       <button (click)="getContaPorIndice()">Mostrar Usuário</button>
     </div>
 
-    <div *ngIf="contaSelecionada" class="dadosDeConta">
+    <div *ngIf="contaSelecionada" class="dadosDeConta flex">
       <h2>{{contaSelecionada.nome}} {{contaSelecionada.sobreNome}}</h2>
       <span>Idade: {{contaSelecionada.idade}}</span><br>
       <span>Faixa etária: {{faixaEtariaDaConta}}</span>
 
-      <div class="flex" style="flex-direction:row;align-items: flex-start;">
+      <div class="flex" style="flex-direction:row;justify-content:center;align-items: start;">
 
       <ul>
         <h3>{{contaSelecionada.compras.length}} Compras Realizadas</h3>
@@ -92,6 +92,15 @@
         </li>
       </ul>
 
+      </div>
+
+      <div>
+        <ul style="display:flex; flex-direction:row; flex-wrap: wrap;">
+          <h3 style="text-align:center;">Produtos que serão Recomendados com base nas pesquisas, produtos mais vendidos, categorias mais vendidas, mais vendidos por faixa etária e em geral.</h3>
+          <li style="margin:20px;" *ngFor="let item of produtosRecomendados">
+            {{item}}
+          </li>
+        </ul>
       </div>
 
 

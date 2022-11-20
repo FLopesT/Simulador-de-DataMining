@@ -11,8 +11,11 @@ export class GeradorDeBancoService {
 
   pessoa: Conta | any
   faker = require('faker-br')
-  objProdutosFinal:any;
-  começou:boolean = false
+  objProdutosFinal: any;
+  começou: boolean = false
+  numeroDeContas: number = 0;
+  catExcluida1 = ''
+  catExcluida2 = ''
 
   embaralhar(array: any[]) {
     let i = array.length, iRandom;
@@ -29,9 +32,9 @@ export class GeradorDeBancoService {
     let produtosList: NovoObj = {};
     this.produtos.forEach(item => {
       categoriasList[item.categoria] = 0;
-      item.produtos.forEach(i=> {
-         produtosList[i] = 0;
-       })
+      item.produtos.forEach(i => {
+        produtosList[i] = 0;
+      })
     })
     return { produtosList, categoriasList };
   }
@@ -49,9 +52,7 @@ export class GeradorDeBancoService {
     this.produtos.forEach(item => {
       this.embaralhar(item.produtos)
     })
-    this.começou = true;
   }
-
 
   addComprasEmPesquisas(pesq: PesquisasCompras[], comp: PesquisasCompras[]) {
     comp.forEach((c => {
@@ -72,10 +73,20 @@ export class GeradorDeBancoService {
       compras: compras,
       pesquisas: pesquisas
     }
-    if (conta.compras.length == 0) { //se não existir compra, precisamos garantir que existam pesquisas
+    //se não existir compra, precisamos garantir que existam pesquisas
+    if (conta.compras.length == 0) {
       conta.pesquisas = this.gerarPesqCompras(true);
     }
+    //======================================================
     return conta
+  }
+
+  mudarCategoriasExcluidas() { //melhorar aleatoreadade
+    this.catExcluida1 = this.produtos[this.gerarValor(4)].categoria;
+    this.catExcluida2 = this.produtos[this.gerarValor(4)].categoria;
+    while (this.catExcluida2 == this.catExcluida1) {
+      this.catExcluida2 = this.produtos[this.gerarValor(4)].categoria;
+    }
   }
 
   gerarPesqCompras(value: boolean) {
@@ -84,13 +95,25 @@ export class GeradorDeBancoService {
     if (value) {
       numDePesquisas = 4;
     } else {
-      numDePesquisas = this.gerarValor(6);
+      let num = this.gerarValor(10)
+      numDePesquisas = this.gerarValor(num);
     }
     let index = 1
     let pesquisas: PesquisasCompras[] = [];
     if (numDePesquisas != 0) {
       while (index <= numDePesquisas) {
         let produtos = this.produtos[this.gerarValor(this.produtos.length - 1)]
+        //excluindo categorias que conta não quer de jeito nem um
+        //isso para melhorar aleatoriedade
+        if (this.numeroDeContas == 2499) {
+          this.mudarCategoriasExcluidas()
+          this.numeroDeContas = 0;
+        }
+        while (produtos.categoria == this.catExcluida1 ||
+          produtos.categoria == this.catExcluida2) {
+          produtos = this.produtos[this.gerarValor(this.produtos.length - 1)]
+        }
+        //=======================================================================
         let prodName = produtos.produtos[this.gerarValor(produtos.produtos.length - 1)]
         pesquisas.push({
           categoria: produtos.categoria,
@@ -104,7 +127,7 @@ export class GeradorDeBancoService {
 
 
   gerarIdade(): number {
-    let f = ['jovemAdulto','adulto','MeiaIdade','terceiraIdade'];
+    let f = ['jovemAdulto', 'adulto', 'MeiaIdade', 'terceiraIdade'];
     this.embaralhar(f)
     switch (f[0]) { //decidi sortear assim, para ter uma distribuição mais aleatórea
       case ('jovemAdulto'): return 18 + this.gerarValor(8) //18 a 25 anos, Jovem Adulto
